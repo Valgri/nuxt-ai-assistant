@@ -1,0 +1,40 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String?
+  resumes   Resume[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Resume {
+  id              String           @id @default(cuid())
+  title           String
+  content         Json
+  userId          String
+  user            User             @relation(fields: [userId], references: [id])
+  recommendations Recommendation[]
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+}
+
+model Recommendation {
+  id        String   @id @default(cuid())
+  type      String // 'resume_improvement', 'career_path', 'learning'
+  content   Json
+  resumeId  String
+  resume    Resume   @relation(fields: [resumeId], references: [id])
+  createdAt DateTime @default(now())
+}

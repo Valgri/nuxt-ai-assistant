@@ -1,0 +1,47 @@
+{
+  "name": "nuxt-app",
+  "private": true,
+  "type": "module",
+  "license": "MIT",
+  "engines": {
+    "node": ">=18.0.0",
+    "yarn": ">=1.22.0"
+  },
+  "scripts": {
+    "build": "nuxt build",
+    "dev": "nuxt dev",
+    "generate": "nuxt generate",
+    "preview": "nuxt preview",
+    "postinstall": "nuxt prepare"
+  },
+  "dependencies": {
+    "@nuxt/ui": "^3.1.0",
+    "@nuxtjs/tailwindcss": "^6.13.1",
+    "@pinia/nuxt": "^0.11.0",
+    "@prisma/client": "^6.7.0",
+    "@storybook/vue3": "^8.6.12",
+    "@tailwindcss/postcss": "^4.1.4",
+    "@urql/vue": "^1.4.3",
+    "embla-carousel": "8.6.0",
+    "graphql": "^16.8.1",
+    "graphql-yoga": "^5.13.4",
+    "nuxt": "^3.17.1",
+    "openai": "^4.96.2",
+    "pdf-lib": "^1.17.1",
+    "pinia": "^3.0.2",
+    "puppeteer": "^24.7.2",
+    "urql": "^4.2.2",
+    "vue": "^3.5.13",
+    "vue-router": "^4.5.1"
+  },
+  "devDependencies": {
+    "@urql/core": "^5.0.0",
+    "autoprefixer": "^10.4.21",
+    "postcss": "^8.4.47",
+    "postcss-import": "^16.1.0",
+    "prisma": "^6.7.0",
+    "tailwindcss": "^3.4.12",
+    "typescript": "^5.6.3",
+    "vite": "^6.0.0"
+  }
+}
