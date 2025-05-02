@@ -131,6 +131,6 @@ async function handleSubmit() {
 }
 
 async function analyze() {
-  await store.analyzeResume()
+  await store.anal`yzeResume()
 }
 </script>

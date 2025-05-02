@@ -1,17 +1,27 @@
 import { PrismaClient } from '@prisma/client'
 import { H3Event } from 'h3'
 import { ResumeData } from '~/types/resume'
+import { serverSupabaseUser } from '#supabase/server'
 
 const prisma = new PrismaClient()
 
 export default defineEventHandler(async (event: H3Event) => {
+  const user = await serverSupabaseUser(event)
+
+  if (!user) {
+    throw createError({
+      statusCode: 401,
+      statusMessage: 'Unauthorized'
+    })
+  }
+
   const method = event.method
 
   switch (method) {
     case 'POST':
-      return handleSaveResume(event)
+      return handleSaveResume(event, user.id)
     case 'GET':
-      return handleGetResumes(event)
+      return handleGetResumes(event, user.id)
     default:
       throw createError({
         statusCode: 405,
@@ -20,14 +30,10 @@ export default defineEventHandler(async (event: H3Event) => {
   }
 })
 
-async function handleSaveResume(event: H3Event) {
+async function handleSaveResume(event: H3Event, userId: string) {
   const body = await readBody(event) as ResumeData
 
   try {
-    // For now, we're not handling user authentication
-    // In a real app, we'd get the userId from the session
-    const userId = 'demo-user'
-
     const resume = await prisma.resume.create({
       data: {
         title: body.title,
@@ -45,11 +51,8 @@ async function handleSaveResume(event: H3Event) {
   }
 }
 
-async function handleGetResumes(event: H3Event) {
+async function handleGetResumes(event: H3Event, userId: string) {
   try {
-    // For now, we're not handling user authentication
-    const userId = 'demo-user'
-
     const resumes = await prisma.resume.findMany({
       where: {
         userId

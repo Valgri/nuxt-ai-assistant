@@ -1,5 +1,10 @@
 export default defineNuxtConfig({
-  modules: ['@pinia/nuxt', '@nuxtjs/tailwindcss', '@nuxtjs/color-mode'],
+  modules: [
+    '@pinia/nuxt',
+    '@nuxtjs/tailwindcss',
+    '@nuxtjs/color-mode',
+    '@nuxtjs/supabase'
+  ],
   nitro: {
     compatibilityDate: '2025-04-30'
   },
@@ -21,5 +26,14 @@ export default defineNuxtConfig({
         { name: 'description', content: 'AI-powered career assistant for resume analysis and career tracking' }
       ]
     }
+  },
+  supabase: {
+    url: process.env.SUPABASE_URL,
+    key: process.env.SUPABASE_KEY,
+    redirectOptions: {
+      login: '/auth',
+      callback: '/confirm',
+      exclude: ['/'],
+    },
   }
 })
