@@ -15,18 +15,22 @@
     "postinstall": "nuxt prepare"
   },
   "dependencies": {
+    "@auth0/auth0-vue": "^2.4.0",
     "@nuxt/ui": "^3.1.0",
     "@nuxtjs/supabase": "^1.5.0",
     "@nuxtjs/tailwindcss": "^6.13.1",
     "@pinia/nuxt": "^0.11.0",
-    "@prisma/client": "^6.7.0",
     "@storybook/vue3": "^8.6.12",
     "@supabase/supabase-js": "^2.49.4",
     "@tailwindcss/postcss": "^4.1.4",
+    "@types/bcrypt": "^5.0.2",
+    "@types/jsonwebtoken": "^9.0.9",
     "@urql/vue": "^1.4.3",
+    "bcrypt": "^5.1.1",
     "embla-carousel": "8.6.0",
     "graphql": "^16.8.1",
     "graphql-yoga": "^5.13.4",
+    "jsonwebtoken": "^9.0.2",
     "nuxt": "^3.17.1",
     "openai": "^4.96.2",
     "pdf-lib": "^1.17.1",
@@ -37,6 +41,8 @@
     "vue-router": "^4.5.1"
   },
   "devDependencies": {
+    "@nuxt/devtools": "^2.4.0",
+    "@prisma/client": "^6.7.0",
     "@urql/core": "^5.0.0",
     "autoprefixer": "^10.4.21",
     "postcss": "^8.4.47",

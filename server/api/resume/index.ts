@@ -34,6 +34,23 @@ async function handleSaveResume(event: H3Event, userId: string) {
   const body = await readBody(event) as ResumeData
 
   try {
+    // Check if user exists in Prisma DB
+    let user = await prisma.user.findUnique({
+      where: { id: userId }
+    })
+
+    // If user doesn't exist in Prisma DB, create them
+    if (!user) {
+      const supabaseUser = await serverSupabaseUser(event)
+      user = await prisma.user.create({
+        data: {
+          id: userId,
+          email: supabaseUser!.email!,
+          name: supabaseUser!.user_metadata?.name
+        }
+      })
+    }
+
     const resume = await prisma.resume.create({
       data: {
         title: body.title,

@@ -51,8 +51,19 @@
       </div>
     </div>
 
-    <div v-else-if="error" class="bg-red-50 p-4 rounded">
-      <p class="text-red-600">{{ error }}</p>
+    <div v-else-if="error" class="space-y-4">
+      <div class="bg-red-50 p-4 rounded">
+        <h4 class="font-semibold text-red-800 mb-2">Error</h4>
+        <p class="text-red-600">{{ error }}</p>
+      </div>
+      <div v-if="error.includes('quota')" class="bg-blue-50 p-4 rounded">
+        <h4 class="font-semibold text-blue-800 mb-2">What can I do?</h4>
+        <ul class="list-disc pl-5 space-y-2 text-blue-700">
+          <li>Try again in a few minutes</li>
+          <li>Contact support if the issue persists</li>
+          <li>Consider upgrading your plan for higher limits</li>
+        </ul>
+      </div>
     </div>
 
     <div v-else class="text-center text-gray-500">
@@ -65,13 +76,20 @@
 import { computed, ref } from 'vue'
 import { useResumeStore } from '~/stores/resume'
 import { usePdfExport } from '~/composables/pdf/usePdfExport'
+import { AIServiceError } from '~/composables/ai/useAIService'
 
 const store = useResumeStore()
 const pdfExport = usePdfExport()
 const isExporting = ref(false)
 
 const isAnalyzing = computed(() => store.isAnalyzing)
-const error = computed(() => store.error)
+const error = computed(() => {
+  if (!store.error) return null
+  if (store.error instanceof AIServiceError) {
+    return store.error.userMessage
+  }
+  return store.error.message || 'An unexpected error occurred'
+})
 const recommendations = computed(() => store.recommendations)
 
 const resumeImprovements = computed(() =>

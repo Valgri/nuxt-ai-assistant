@@ -57,6 +57,7 @@
       </div>
 
       <div>
+
         <label class="block text-sm font-medium mb-2">Skills</label>
         <textarea
           v-model="form.skills"
@@ -91,9 +92,18 @@
 import { ref, computed } from 'vue'
 import { useResumeStore } from '~/stores/resume'
 
+interface Props {
+  title: string
+  experience: Array<{
+    company: string
+    position: string
+    description: string
+  }>
+  skills: string
+}
 const store = useResumeStore()
 
-const form = ref({
+const form = ref<Props>({
   title: '',
   experience: [
     { company: '', position: '', description: '' }
@@ -131,6 +141,6 @@ async function handleSubmit() {
 }
 
 async function analyze() {
-  await store.anal`yzeResume()
+  await store.analyzeResume()
 }
 </script>

@@ -36,7 +36,7 @@
               />
             </UFormGroup>
           </div>
-
+          {{ loading || !email || !password }}
           <UButton
             type="submit"
             block
@@ -53,6 +53,9 @@
 
 <script setup lang="ts">
 import { useAuth } from '~/composables/auth/useAuth'
+import UInput from '~/components/shared/UInput.vue'
+import UFormGroup from '~/components/shared/UFormGroup.vue'
+import UButton from '~/components/shared/UButton.vue'
 
 const { login, loading } = useAuth()
 const router = useRouter()
@@ -70,11 +73,11 @@ const handleLogin = async () => {
       color: 'green'
     })
     await router.push('/')
-  } catch (error) {
+  } catch (error: unknown) {
     const toast = useNuxtApp().$toast as { add: (options: { title: string; description: string; color: string }) => void }
     toast.add({
       title: 'Sign in Failed',
-      description: error.message,
+      description: (error instanceof Error ? error.message : 'An unknown error occurred'),
       color: 'red'
     })
   }

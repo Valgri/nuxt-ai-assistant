@@ -16,5 +16,5 @@
 
 <script setup lang="ts">
 import ResumeForm from '~/components/resume/ResumeForm.vue'
-import ResumeAnalyzer from '~/components/resume/ResumeAnalyzer.vue'
+import ResumeAnalyzer from '@/components/resume/ResumeAnalyzer.vue'
 </script>

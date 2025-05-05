@@ -1,9 +1,11 @@
 export default defineNuxtConfig({
+  devtools: { enabled: true },
   modules: [
     '@pinia/nuxt',
     '@nuxtjs/tailwindcss',
     '@nuxtjs/color-mode',
-    '@nuxtjs/supabase'
+    '@nuxtjs/supabase',
+    '@nuxt/devtools',
   ],
   nitro: {
     compatibilityDate: '2025-04-30'
@@ -11,6 +13,7 @@ export default defineNuxtConfig({
   typescript: {
     strict: true
   },
+  watch: ['~/components/**/*.vue', '~/composables/**/*.ts'],
   postcss: {
     plugins: {
       tailwindcss: {},
@@ -33,7 +36,17 @@ export default defineNuxtConfig({
     redirectOptions: {
       login: '/auth',
       callback: '/confirm',
-      exclude: ['/'],
+      exclude: ['/', '/register', '/auth', '/confirm']
     },
+  },
+  runtimeConfig: {
+    openaiApiKey: process.env.OPENAI_API_KEY,
+    openaiModel: process.env.OPENAI_MODEL || 'gpt-3.5-turbo',
+    public: {
+      supabase: {
+        url: process.env.SUPABASE_URL,
+        key: process.env.SUPABASE_KEY
+      }
+    }
   }
 })

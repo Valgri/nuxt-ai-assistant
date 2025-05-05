@@ -1,18 +1,27 @@
 import type { User } from '@supabase/supabase-js'
-import { useSupabase } from '~/composables/auth/useSupabase' // Adjust the path as needed
 import { useRouter } from 'vue-router'
 
+const validateEmail = (email: string) => {
+  // Basic email validation
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+  if (!emailRegex.test(email)) {
+    throw new Error('Please enter a valid email address')
+  }
+
+  // Проверяем домен (можно настроить под ваши требования)
+  const allowedDomains = ['gmail.com', 'yahoo.com', 'hotmail.com', 'outlook.com']
+  const domain = email.split('@')[1]
+  if (!allowedDomains.includes(domain)) {
+    throw new Error(`Email domain not allowed. Please use one of: ${allowedDomains.join(', ')}`)
+  }
+}
+
 export const useAuth = () => {
-  const { supabase } = useSupabase()
-  const user = ref<User | null>(null)
+  const supabase = useSupabaseClient()
+  const user = useSupabaseUser()
   const loading = ref(false)
   const error = ref<string | null>(null)
   const router = useRouter()
-
-  const handleAuthStateChange = async () => {
-    const { data: { session } } = await supabase.auth.getSession()
-    user.value = session?.user ?? null
-  }
 
   const login = async (email: string, password: string) => {
     try {
@@ -24,7 +33,6 @@ export const useAuth = () => {
       })
       if (authError) throw authError
       if (data?.user) {
-        user.value = data.user
         await router.push('/')
       }
     } catch (e: any) {
@@ -36,42 +44,59 @@ export const useAuth = () => {
   }
 
   const signup = async (email: string, password: string) => {
+    console.log('Starting signup process...', { email });
+
     try {
-      loading.value = true
-      error.value = null
+      loading.value = true;
+      error.value = null;
+
+      // Validate email first
+      validateEmail(email);
+
+      console.log('Calling Supabase auth.signUp...');
       const { data, error: authError } = await supabase.auth.signUp({
         email,
-        password
+        password,
+        options: {
+          emailRedirectTo: `${window.location.origin}/confirm`
+        }
       })
-      if (authError) throw authError
-      if (data?.user?.identities?.length === 0) {
-        throw new Error('This email is already registered')
+
+      console.log('Supabase response:', { data, error: authError });
+
+      if (authError) {
+        // Преобразуем ошибки Supabase в более понятные сообщения
+        if (authError.message.includes('email_address_invalid')) {
+          throw new Error('This email address is not allowed. Please use a different email.')
+        }
+        throw authError;
       }
+
+      if (!data?.user || data.user.identities?.length === 0) {
+        throw new Error('This email is already registered');
+      }
+
+      await router.push('/confirm')
+      return data
     } catch (e: any) {
-      error.value = e.message
-      throw e
+      console.error('Signup error:', e);
+      error.value = e.message;
+      throw e;
     } finally {
-      loading.value = false
+      loading.value = false;
     }
   }
 
   const logout = async () => {
-    const { error: signOutError } = await supabase.auth.signOut()
-    if (signOutError) {
-      error.value = signOutError.message
-      throw signOutError
+    try {
+      const { error: signOutError } = await supabase.auth.signOut()
+      if (signOutError) throw signOutError
+      await router.push('/auth')
+    } catch (e: any) {
+      error.value = e.message
+      throw e
     }
-    user.value = null
-    await router.push('/auth')
   }
-
-  // Initialize auth state
-  onMounted(() => {
-    handleAuthStateChange()
-    supabase.auth.onAuthStateChange(() => {
-      handleAuthStateChange()
-    })
-  })
 
   return {
     user,

@@ -22,6 +22,9 @@
                 placeholder="Enter your email"
                 autocomplete="email"
               />
+              <template #help>
+                <p class="text-xs text-gray-500">Use gmail.com, yahoo.com, hotmail.com, or outlook.com</p>
+              </template>
             </UFormGroup>
           </div>
 
@@ -61,6 +64,10 @@
             />
           </div>
 
+          <div v-if="formError" class="text-sm text-red-600 mb-4">
+            {{ formError }}
+          </div>
+
           <UButton
             type="submit"
             block
@@ -77,6 +84,10 @@
 
 <script setup lang="ts">
 import { useAuth } from '~/composables/auth/useAuth';
+import UFormGroup from '~/components/shared/UFormGroup.vue';
+import UCheckbox from '~/components/shared/UCheckbox.vue';
+import UInput from '~/components/shared/UInput.vue';
+import UButton from '~/components/shared/UButton.vue';
 
 const { signup, loading } = useAuth();
 const router = useRouter();
@@ -85,45 +96,60 @@ const email = ref('');
 const password = ref('');
 const confirmPassword = ref('');
 const agreeToTerms = ref(false);
+const formError = ref('');
 
 const isFormValid = computed(() => {
-  return email.value &&
-    password.value &&
-    confirmPassword.value &&
-    password.value === confirmPassword.value &&
-    password.value.length >= 8 &&
-    agreeToTerms.value;
+  const validationResults = {
+    hasEmail: Boolean(email.value.trim()),
+    hasPassword: Boolean(password.value),
+    passwordLength: password.value.length >= 8,
+    passwordsMatch: password.value === confirmPassword.value,
+    termsAccepted: agreeToTerms.value
+  };
+
+  console.log('Form validation:', validationResults);
+
+  return validationResults.hasEmail &&
+         validationResults.hasPassword &&
+         validationResults.passwordLength &&
+         validationResults.passwordsMatch &&
+         validationResults.termsAccepted;
 });
 
 const handleRegister = async () => {
-  const toast = useNuxtApp().$toast as { add: (options: { title: string; description: string; color: string }) => void };
+  console.log('=== Starting registration ===');
+  formError.value = '';
 
   try {
     if (!isFormValid.value) {
-      toast.add({
-        title: 'Validation Error',
-        description: 'Please check all form fields and try again',
-        color: 'red'
-      });
+      if (!email.value.trim()) {
+        formError.value = 'Email is required';
+      } else if (!password.value) {
+        formError.value = 'Password is required';
+      } else if (password.value.length < 8) {
+        formError.value = 'Password must be at least 8 characters';
+      } else if (password.value !== confirmPassword.value) {
+        formError.value = 'Passwords do not match';
+      } else if (!agreeToTerms.value) {
+        formError.value = 'You must agree to the terms and conditions';
+      }
       return;
     }
 
+    console.log('Form is valid, attempting signup...');
     await signup(email.value, password.value);
-    
+
+    const toast = useNuxtApp().$toast as { add: (options: { title: string; description: string; color: string }) => void };
     toast.add({
       title: 'Registration Successful',
       description: 'Please check your email to confirm your account',
       color: 'green',
     });
-    
-    // Redirect to confirmation page
+
     await router.push('/confirm');
   } catch (error: any) {
-    toast.add({
-      title: 'Registration Failed',
-      description: error.message,
-      color: 'red'
-    });
+    console.error('Registration error:', error);
+    formError.value = error.message;
   }
 };
 

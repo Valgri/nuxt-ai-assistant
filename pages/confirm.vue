@@ -10,14 +10,14 @@
           <h2 class="text-2xl font-bold">Error</h2>
           <p>{{ error }}</p>
         </div>
-        <UButton to="/auth" color="primary">Back to Login</UButton>
+        <NuxtLink to="/auth" color="primary">Back to Login</NuxtLink>
       </template>
       <template v-else>
         <div class="text-green-500 mb-4">
           <h2 class="text-2xl font-bold">Email Confirmed!</h2>
           <p>You can now log in to your account.</p>
         </div>
-        <UButton to="/auth" color="primary">Continue to Login</UButton>
+        <NuxtLink to="/auth" color="primary">Continue to Login</NuxtLink>
       </template>
     </div>
   </div>
