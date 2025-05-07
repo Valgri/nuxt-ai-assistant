@@ -36,7 +36,6 @@
               />
             </UFormGroup>
           </div>
-          {{ loading || !email || !password }}
           <UButton
             type="submit"
             block

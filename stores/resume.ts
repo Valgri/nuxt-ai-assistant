@@ -30,8 +30,6 @@ export const useResumeStore = defineStore('resume', {
     },
 
     async analyzeResume() {
-      console.log(1);
-
       if (!this.currentResume) {
         throw new Error('No resume to analyze')
       }
@@ -59,6 +57,21 @@ export const useResumeStore = defineStore('resume', {
       try {
         const resumes = await $fetch<StoredResume[]>('/api/resume')
         return resumes
+      } catch (error: any) {
+        this.error = error.message
+        throw error
+      }
+    },
+
+    async deleteResume(id: string) {
+      try {
+        await $fetch(`/api/resume/${id}`, {
+          method: 'DELETE'
+        })
+        if (this.currentResume?.id === id) {
+          this.currentResume = null
+          this.recommendations = []
+        }
       } catch (error: any) {
         this.error = error.message
         throw error
